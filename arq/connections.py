@@ -4,7 +4,7 @@ import logging
 from dataclasses import dataclass
 from datetime import datetime, timedelta
 from operator import attrgetter
-from typing import TYPE_CHECKING, Any, Callable, List, Optional, Tuple, Union, cast
+from typing import TYPE_CHECKING, Any, Callable, Dict, List, Optional, Tuple, Union, cast
 from urllib.parse import parse_qs, urlparse
 from uuid import uuid4
 
@@ -48,6 +48,7 @@ class RedisSettings:
 
     sentinel: bool = False
     sentinel_master: str = 'mymaster'
+    sentinel_kwargs: Optional[Dict[str, Any]] = None
 
     retry_on_timeout: bool = False
     retry_on_error: Optional[List[Exception]] = None
@@ -243,6 +244,7 @@ async def create_pool(
                 *args,
                 sentinels=settings.host,
                 ssl=settings.ssl,
+                sentinel_kwargs=settings.sentinel_kwargs,
                 **kwargs,
             )
             redis = client.master_for(settings.sentinel_master, redis_class=ArqRedis)
